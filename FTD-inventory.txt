@@ -1,0 +1,8 @@
+#[mylabservers:vars]
+#ansible_ssh_pass=cisco!123
+#ansible_user=admin
+#ansible_network_os=ftd
+#ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+[mylabservers]
+serv1 ansible_host=10.122.189.217

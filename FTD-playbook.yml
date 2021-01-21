@@ -1,0 +1,46 @@
+---
+- hosts: all
+  connection: local
+  gather_facts: no
+
+# Setting vars for this App
+
+  vars:
+      destination_host: 10.122.189.217
+      resource_path: api/fmc_config/v1/domain
+      access_token: api/fmc_platform/v1/auth/generatetoken
+ 
+# Running tasks
+
+  tasks:
+      - name : Get Access access_token
+        uri:
+            url: https://{{ destination_host }}/{{ access_token }}
+            method: POST
+            headers: {Accept: "application/json",Content-Type: "application/json"}
+            validate_certs: no
+            user: admin
+            password: cisco!123
+            force: yes
+            force_basic_auth: yes
+        register: rest_post
+        ignore_errors: yes
+      - name: DEBUG / GOT INFO
+        debug:
+            msg: "{{ rest_post.x_auth_access_token }}"
+        when: rest_post.status == 204
+      - name: Create Bulk Host Objects
+        uri:
+            url: https://{{ destination_host }}/{{ resource_path }}/{{ rest_post.domain_uuid }}/object/hosts?bulk=true
+            method: POST
+            headers: {Accept: "application/json",Content-Type: "application/json", X-auth-access-token: "{{ rest_post.x_auth_access_token }}" }
+            body_format: json
+            validate_certs: no
+            body: [{"name": "test9", "value":"1.1.1.9"},{"name": "test10", "value":"1.1.1.10"}]
+            status_code: 201
+        register: rest_post1
+        ignore_errors: no
+      - name: DEBUG / GOT INFO
+        debug:
+            msg: "{{ rest_post1.status }}"
+        when: rest_post1.status ==  201
