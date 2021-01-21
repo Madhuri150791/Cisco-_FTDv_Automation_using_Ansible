@@ -36,7 +36,7 @@
             headers: {Accept: "application/json",Content-Type: "application/json", X-auth-access-token: "{{ rest_post.x_auth_access_token }}" }
             body_format: json
             validate_certs: no
-            body: [{"name": "test9", "value":"1.1.1.9"},{"name": "test10", "value":"1.1.1.10"}]
+            body: "{{ lookup('file', 'payload.json') }}"
             status_code: 201
         register: rest_post1
         ignore_errors: no
